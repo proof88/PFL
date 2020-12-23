@@ -85,13 +85,13 @@ string PFL::getDirectory(const char* path)
     string strPath = path;
     // todo: into new function from here ###
     const int sizeToCopy = sizeof(char) * (strPath.length()+1);
-    char* const tmpPath = (char*) malloc(sizeToCopy);
+    char* const tmpPath = new char[strPath.length()+1];
     strcpy_s(tmpPath, sizeToCopy, path);
     int newLen = strClr(tmpPath);
     // to here ###
     if ( newLen == 0 )
     {
-        free(tmpPath);
+        delete[] tmpPath;
         return "";
     }
 
@@ -103,11 +103,11 @@ string PFL::getDirectory(const char* path)
     newLen = strClr(tmpPath, '\\');
     if ( newLen == 0 )
     {
-        free(tmpPath);
+        delete[] tmpPath;
         return "";
     }
     strPath = tmpPath;
-    free(tmpPath);
+    delete[] tmpPath;
 
     if ( strchr(strPath.c_str(), '\\') )
         delimiter = '\\';
@@ -127,14 +127,14 @@ string PFL::getFilename(const char* path)
     string strPath = path;
     // todo: into new function from here ###
     const int sizeToCopy = sizeof(char) * (strPath.length()+1);
-    char* tmpPath = (char*) malloc(sizeToCopy);
+    char* tmpPath = new char[strPath.length()+1];
     strcpy_s(tmpPath, sizeToCopy, path);
     strClr(tmpPath);
     strClr(tmpPath, '/', '\\');
     // to here ###
     int newLen = strClrTrails(tmpPath, '.');
     strPath = tmpPath;
-    free(tmpPath);
+    delete[] tmpPath;
     char delimiter = '/';
     if ( strchr(strPath.c_str(), '\\') )
         delimiter = '\\';
