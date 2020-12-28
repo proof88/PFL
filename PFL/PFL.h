@@ -180,8 +180,8 @@ public:
     // ---------------------------------------------------------------------------
 
     PFL(); 
-    PFL(const PFL& other);
-    PFL& operator= (const PFL& other);
+    PFL(const PFL&);
+    PFL& operator= (const PFL&);
     virtual ~PFL();
 
 }; // class PFL
