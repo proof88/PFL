@@ -11,35 +11,13 @@
 
 #include "PFL.h"
 
+#include <math.h>
 // PFL.h already includes string so no use removing the following headers at all to win compilation speed
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
+#include <sys/stat.h>
 
-
-#define M_PI       
-
-
-// Windows header
-// ------------------------------------------------------------------
-#ifndef WINVER
-//#define WINVER 0x0501
-#define WINVER 0x0600
-#endif
-#ifndef _WIN32_WINNT                  
-#define _WIN32_WINNT 0x0501
-#endif                        
-#ifndef _WIN32_WINDOWS
-#define _WIN32_WINDOWS 0x0410
-#endif
-#ifndef _WIN32_IE
-#define _WIN32_IE 0x0600
-#endif
-
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-#include <windows.h>
+#define M_PI
 
 using namespace std;
 
@@ -58,7 +36,8 @@ float PFL::E = 0.0001f;
 */
 bool PFL::fileExists(const char* filename)
 {
-    return ( GetFileAttributesA(filename) != INVALID_FILE_ATTRIBUTES );
+    struct stat buffer;   
+    return (stat (filename, &buffer) == 0);
 } // fileExists()
 
 
