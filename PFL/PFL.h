@@ -158,10 +158,10 @@ public:
         char* srcStr,
         char targetChar1 = ' ', char targetChar2 = '\t'); /**< Removes trailing spaces and tabs from the given string. */
     static unsigned int strClrLeads(
-        char* srcStr,
+        char* const srcStr,
         char targetChar1 = ' ', char targetChar2 = '\t'); /**< Removes leading spaces and tabs from the given string. */
     static unsigned int strClr(
-        char* srcStr,
+        char* const srcStr,
         char targetChar1 = ' ', char targetChar2 = '\t'); /**< Removes leading and trailing spaces and tabs from the given string. */
 
     static float pi();                          /**< Returns PI. */

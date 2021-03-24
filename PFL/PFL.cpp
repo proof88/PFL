@@ -128,7 +128,7 @@ string PFL::changeExtension(const char* path, const char* ext)
     Gets how many times the given character appears in the given buffer.
     @return Number of appearance of the given character in the given buffer.
 */
-unsigned int PFL::numCharAppears(char searchFor, const char* buffer, size_t buffer_size)
+unsigned int PFL::numCharAppears(const char searchFor, const char* buffer, size_t buffer_size)
 {
     if ( buffer == NULL )
         return 0;
