@@ -138,10 +138,19 @@ class PFL
 {
 
 public:
+    // when I switch to C++11 I won't need this struct here and the custom gettimeofday() implementation
+    // MSVC defines this in winsock2.h!?
+    typedef struct timeval {
+        long tv_sec;
+        long tv_usec;
+    } timeval;
+
     static float PI;
     static float E;
 
     // ---------------------------------------------------------------------------
+
+    static int gettimeofday(struct timeval * tp, struct timezone * tzp);
 
     static bool         fileExists(const char* path);     /**< Determines whether the given file exists. */
     static std::string  getExtension(const char* path);   /**< Extracts the extension from the path. */
