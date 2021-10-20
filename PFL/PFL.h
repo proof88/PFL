@@ -150,7 +150,12 @@ public:
 
     // ---------------------------------------------------------------------------
 
-    static int gettimeofday(struct timeval * tp, struct timezone * tzp);
+    static int  gettimeofday(struct timeval * tp, struct timezone * tzp);                                  /**< Gets current time. */
+    static long getTimeDiffInUs(const timeval& end, const timeval& begin);                                 /**< Gets difference of 2 timestamps. */
+    static bool updateForMinDuration(timeval& timeRef, long durationUs);                                   /**< Updates timeRef if it is greater duration than durationUs. */
+    static bool updateForMinDuration(timeval& timeRef, const timeval& timeBegin, const timeval& timeEnd);  /**< Updates timeRef if it is greater duration than (timeEnd - timeBegin). */
+    static bool updateForMaxDuration(timeval& timeRef, long durationUs);                                   /**< Updates timeRef if it is less duration than durationUs. */
+    static bool updateForMaxDuration(timeval& timeRef, const timeval& timeBegin, const timeval& timeEnd);  /**< Updates timeRef if it is less duration than (timeEnd - timeBegin). */
 
     static bool         fileExists(const char* path);     /**< Determines whether the given file exists. */
     static std::string  getExtension(const char* path);   /**< Extracts the extension from the path. */

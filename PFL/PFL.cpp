@@ -35,9 +35,15 @@ float PFL::PI = 3.14159265358979323846f;
 float PFL::E = 0.0001f;
 
 
-// implementation copied from:
-// https://stackoverflow.com/questions/10905892/equivalent-of-gettimeday-for-windows
-// I have to get rid of this once dev environment is upgraded to newer MSVC
+/**
+    Gets current time.
+    This is a replacement implementation due to lack of gettimeofday() in <sys/time.h>.
+    Copied from: https://stackoverflow.com/questions/10905892/equivalent-of-gettimeday-for-windows .
+    This uses Win32.
+    I can get rid of this once I upgrade to newer dev env (newer MSVC).
+
+    @return Current time in milliseconds precision (microseconds part is always milliseconds * 1000 in this implementation).
+*/
 int PFL::gettimeofday(struct timeval * tp, struct timezone *)
 {
     // Note: some broken versions only have 8 trailing zero's, the correct epoch has 9 trailing zero's
@@ -56,8 +62,104 @@ int PFL::gettimeofday(struct timeval * tp, struct timezone *)
 
     tp->tv_sec  = (long) ((time - EPOCH) / 10000000L);
     tp->tv_usec = (long) (system_time.wMilliseconds * 1000);
+
     return 0;
 } // gettimeofday()
+
+
+/**
+    Gets difference of 2 timestamps.
+
+    @return Value of (end - begin) in microseconds.
+*/
+long PFL::getTimeDiffInUs(const timeval& end, const timeval& begin)
+{
+    return (end.tv_sec - begin.tv_sec) * 1000000 + end.tv_usec - begin.tv_usec;
+}
+
+
+/**
+    Updates timeRef if it is greater duration than durationUs.
+
+    @param timeRef      The duration that might be updated.
+    @param durationUs   Duration in microseconds we are checking against.
+
+    @return True if timeRef has been updated, false otherwise.
+*/
+bool PFL::updateForMinDuration(timeval& timeRef, long durationUs)
+{
+    bool retVal = false;
+
+    const long durationRefUs = timeRef.tv_sec * 1000000 + timeRef.tv_usec;
+
+    if ( durationUs < durationRefUs )
+    {
+        retVal = true;
+        timeRef.tv_sec = durationUs / 1000000;
+        timeRef.tv_usec = durationUs % 1000000;
+    }
+
+    return retVal;
+} // updateForMinDuration()
+
+
+/**
+    Updates timeRef if it is greater duration than (timeEnd - timeBegin).
+
+    @param timeRef   The duration that might be updated.
+    @param timeBegin Timestamp of the beginning of the new duration.
+    @param timeEnd   Timestamp of the end of the new duration.
+
+    @return True if timeRef has been updated, false otherwise.
+*/
+bool PFL::updateForMinDuration(timeval& timeRef, const timeval& timeBegin, const timeval& timeEnd)
+{
+    const long durationUs = getTimeDiffInUs(timeEnd, timeBegin);
+
+    return updateForMinDuration(timeRef, durationUs);
+} // updateForMinDuration()
+
+
+/**
+    Updates timeRef if it is less duration than durationUs.
+
+    @param timeRef      The duration that might be updated.
+    @param durationUs   Duration in microseconds we are checking against.
+
+    @return True if timeRef has been updated, false otherwise.
+*/
+bool PFL::updateForMaxDuration(timeval& timeRef, long durationUs)
+{
+    bool retVal = false;
+
+    const long durationRefUs = timeRef.tv_sec * 1000000 + timeRef.tv_usec;
+
+    if ( durationUs > durationRefUs )
+    {
+        retVal = true;
+        timeRef.tv_sec = durationUs / 1000000;
+        timeRef.tv_usec = durationUs % 1000000;
+    }
+
+    return retVal;
+} // updateForMaxDuration()
+
+
+/**
+    Updates timeRef if it is less duration than (timeEnd - timeBegin).
+
+    @param timeRef   The duration that might be updated.
+    @param timeBegin Timestamp of the beginning of the new duration.
+    @param timeEnd   Timestamp of the end of the new duration.
+
+    @return True if timeRef has been updated, false otherwise.
+*/
+bool PFL::updateForMaxDuration(timeval& timeRef, const timeval& timeBegin, const timeval& timeEnd)
+{
+    const long durationUs = getTimeDiffInUs(timeEnd, timeBegin);
+
+    return updateForMaxDuration(timeRef, durationUs);
+} // updateForMaxDuration()
 
 
 /**
