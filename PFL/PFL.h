@@ -189,6 +189,8 @@ public:
     static float degToRad(float degree);        /**< Converts the given angle from degrees to radians. */
     static float radToDeg(float radian);        /**< Converts the given angle from radians to degrees. */
 
+    static int random(int from, int to);        /**< Generates a random number between from and to. */
+
     // ---------------------------------------------------------------------------
 
     PFL(); 

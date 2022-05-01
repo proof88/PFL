@@ -11,6 +11,8 @@
 
 #include "PFL.h"
 
+#include <cstdlib> 
+#include <ctime> 
 #include <math.h>
 // PFL.h already includes string so no use removing the following headers at all to win compilation speed
 #include <stdio.h>
@@ -413,9 +415,19 @@ float PFL::radToDeg(float radian)
 } // radToDeg()
 
 
+/**
+    Generates a random number between from and to.
+*/
+int PFL::random(int from, int to)
+{
+    //TODO: when cpp11 is available, review this: https://stackoverflow.com/questions/13445688/how-to-generate-a-random-number-in-c
+    return rand() % (to - from + 1) + from;
+}
+
+
 PFL::PFL()
 {
-
+    srand((unsigned)time(0));
 }
 
 
