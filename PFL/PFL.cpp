@@ -367,7 +367,7 @@ float PFL::pi()
 */
 float PFL::roundf(float value)
 {
-    return value < 0.0f ? ceil(value - 0.5f) : floor(value + 0.5f);
+    return static_cast<float>(value < 0.0f ? ceil(value - 0.5f) : floor(value + 0.5f));
 } // roundf()
 
 
