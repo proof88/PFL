@@ -252,6 +252,8 @@ string PFL::getFilename(const char* path)
 */
 string PFL::changeExtension(const char* path, const char* ext)
 {
+    // this function can be also thrown out when I switch to Cpp17:
+    // https://en.cppreference.com/w/cpp/filesystem/path/replace_extension
     const string strFilename = getFilename(path);
     return strFilename.length() > 0 ? 
         getDirectory(path) + strFilename.substr(0, strFilename.find_last_of('.')) + '.' + ext : "";
