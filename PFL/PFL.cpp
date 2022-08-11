@@ -11,13 +11,15 @@
 
 #include "PFL.h"
 
-#include <cstdlib> 
-#include <ctime> 
-#include <math.h>
 // PFL.h already includes string so no use removing the following headers at all to win compilation speed
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
+
+#include <cstdlib> 
+#include <ctime> 
+#include <math.h>
+#include <random>  // cpp11
 
 // these includes below are needed only for the gettimeofday() implementation 
 #define WIN32_LEAN_AND_MEAN
@@ -422,8 +424,17 @@ float PFL::radToDeg(float radian)
 */
 int PFL::random(int from, int to)
 {
-    //TODO: when cpp11 is available, review this: https://stackoverflow.com/questions/13445688/how-to-generate-a-random-number-in-c
+#if __cplusplus > 199711L
+    // https://stackoverflow.com/questions/13445688/how-to-generate-a-random-number-in-c
+    // don't forget that you have to explicitly specify /Zc:__cplusplus flag to compiler so that __cplusplus will be set properly!
+    // https://devblogs.microsoft.com/cppblog/msvc-now-correctly-reports-__cplusplus/
+    static std::random_device dev;
+    static std::mt19937 rng(dev());
+    std::uniform_int_distribution<std::mt19937::result_type> dist(from, to);
+    return dist(rng);
+#else
     return rand() % (to - from + 1) + from;
+#endif
 }
 
 
