@@ -251,14 +251,20 @@ string PFL::getFilename(const char* path)
 
 /**
     Changes the file extension in the given path.
+    Specifying empty extension string will actually remove the extension part (e.g.: ".ext") from the string.
 */
 string PFL::changeExtension(const char* path, const char* ext)
 {
     // this function can be also thrown out when I switch to Cpp17:
     // https://en.cppreference.com/w/cpp/filesystem/path/replace_extension
     const string strFilename = getFilename(path);
-    return strFilename.length() > 0 ? 
-        getDirectory(path) + strFilename.substr(0, strFilename.find_last_of('.')) + '.' + ext : "";
+    if (strFilename.empty())
+    {
+        return "";
+    }
+    return std::string(ext).length() > 0 ? 
+        getDirectory(path) + strFilename.substr(0, strFilename.find_last_of('.')) + '.' + ext :
+        getDirectory(path) + strFilename.substr(0, strFilename.find_last_of('.'));
 } // changeExtension()
 
 
