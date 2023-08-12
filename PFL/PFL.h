@@ -191,6 +191,9 @@ public:
 
     static int random(int from, int to);        /**< Generates a random number between from and to. */
 
+    static float lerp(
+        float v0, float v1, float t);           /**< Linear interpolation between v0 and v1. */
+
     // ---------------------------------------------------------------------------
 
     PFL(); 

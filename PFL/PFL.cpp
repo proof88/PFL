@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 
+#include <cassert>
 #include <cstdlib> 
 #include <ctime> 
 #include <math.h>
@@ -441,6 +442,23 @@ int PFL::random(int from, int to)
 #else
     return rand() % (to - from + 1) + from;
 #endif
+}
+
+
+/**
+   Linear interpolation between v0 and v1.
+
+   @param v0 Start of interval.
+   @param v1 End of interval.
+   @param t  Factor in range [0,1] where 0 results in v0, 1 results in v1.
+             Value is clamped into [0,1] range.
+
+   @return Interpolated value between v0 and v1 by factor of t.
+*/
+float PFL::lerp(float v0, float v1, float t) {
+    assert(v0 < v1);
+    t = max(0.f, min(t, 1.f));
+    return (1 - t) * v0 + t * v1;
 }
 
 
