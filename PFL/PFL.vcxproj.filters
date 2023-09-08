@@ -18,6 +18,9 @@
     <ClInclude Include="PFL.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="winproof88.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PFL.cpp">

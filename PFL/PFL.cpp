@@ -23,8 +23,7 @@
 #include <random>  // cpp11
 
 // these includes below are needed only for the gettimeofday() implementation 
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
+#include "winproof88.h"
 #include <stdint.h> // portable: uint64_t   MSVC: __int64 
 
 #define M_PI
