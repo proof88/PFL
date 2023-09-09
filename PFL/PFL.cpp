@@ -11,7 +11,7 @@
 
 #include "PFL.h"
 
-// PFL.h already includes string so no use removing the following headers at all to win compilation speed
+// PFL.h already includes std::string so no use removing the following headers at all to win compilation speed
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
@@ -27,8 +27,6 @@
 #include <stdint.h> // portable: uint64_t   MSVC: __int64 
 
 #define M_PI
-
-using namespace std;
 
 
 // ############################### PUBLIC ################################
@@ -181,11 +179,11 @@ bool PFL::fileExists(const char* filename)
     Extracts the extension from the path.
     @return The extension in the given filename.
 */
-string PFL::getExtension(const char* path)
+std::string PFL::getExtension(const char* path)
 {
-    const string sf = path;
-    const string::size_type ind = sf.rfind('.');
-    return ( (ind == string::npos) ? "" : string( sf.substr(ind+1) ) );
+    const std::string sf = path;
+    const std::string::size_type ind = sf.rfind('.');
+    return ( (ind == std::string::npos) ? "" : std::string( sf.substr(ind+1) ) );
 } // getExtension()
 
 
@@ -195,9 +193,9 @@ string PFL::getExtension(const char* path)
     @return The extracted directory path. If not empty, there is always a delimiter character at the end of it.
             The delimiter character can be slash or backslash, depending on the given path.
 */
-string PFL::getDirectory(const char* path)
+std::string PFL::getDirectory(const char* path)
 {
-    string strPath = path;
+    std::string strPath = path;
     char tmpPath[1024];
     strcpy_s(tmpPath, 1024, strPath.c_str());
     int newLen = strClr(tmpPath);
@@ -232,9 +230,9 @@ string PFL::getDirectory(const char* path)
 /**
     Extracts the file name from the path.
 */
-string PFL::getFilename(const char* path)
+std::string PFL::getFilename(const char* path)
 {
-    string strPath = path;
+    std::string strPath = path;
     char tmpPath[1024];
     strcpy_s(tmpPath, 1024, strPath.c_str());
     strClr(tmpPath);
@@ -251,13 +249,13 @@ string PFL::getFilename(const char* path)
 
 /**
     Changes the file extension in the given path.
-    Specifying empty extension string will actually remove the extension part (e.g.: ".ext") from the string.
+    Specifying empty extension std::string will actually remove the extension part (e.g.: ".ext") from the std::string.
 */
-string PFL::changeExtension(const char* path, const char* ext)
+std::string PFL::changeExtension(const char* path, const char* ext)
 {
     // this function can be also thrown out when I switch to Cpp17:
     // https://en.cppreference.com/w/cpp/filesystem/path/replace_extension
-    const string strFilename = getFilename(path);
+    const std::string strFilename = getFilename(path);
     if (strFilename.empty())
     {
         return "";
@@ -291,13 +289,13 @@ unsigned int PFL::numCharAppears(const char searchFor, const char* buffer, size_
 
 
 /**
-    Removes trailing chars from the given string.
-    Any trailing char can be removed from the end of the string.
+    Removes trailing chars from the given std::string.
+    Any trailing char can be removed from the end of the std::string.
     If not specified, the default trailing chars to be removed are space and tab chars.
-    @param srcStr      The string to be modified.
+    @param srcStr      The std::string to be modified.
     @param targetChar1 First char to be removed.
     @param targetChar2 Second char to be removed.
-    @return The string's new length which is never greater than the original length.
+    @return The std::string's new length which is never greater than the original length.
 */
 unsigned int PFL::strClrTrails(char* srcStr, char targetChar1, char targetChar2)
 {
@@ -314,13 +312,13 @@ unsigned int PFL::strClrTrails(char* srcStr, char targetChar1, char targetChar2)
 
 
 /**
-    Removes leading chars from the given string.
-    Any leading char can be removed from the beginning of the string.
+    Removes leading chars from the given std::string.
+    Any leading char can be removed from the beginning of the std::string.
     If not specified, the default leading chars to be removed are space and tab chars.
-    @param srcStr      The string to be modified.
+    @param srcStr      The std::string to be modified.
     @param targetChar1 First char to be removed.
     @param targetChar2 Second char to be removed.
-    @return The string's new length which is never greater than the original length.
+    @return The std::string's new length which is never greater than the original length.
 */
 unsigned int PFL::strClrLeads(char* const srcStr, char targetChar1, char targetChar2)
 {
@@ -347,13 +345,13 @@ unsigned int PFL::strClrLeads(char* const srcStr, char targetChar1, char targetC
 
 
 /**
-    Removes leading and trailing chars from the given string.
-    Any leading and trailing char can be removed from the beginning and the end of the string.
+    Removes leading and trailing chars from the given std::string.
+    Any leading and trailing char can be removed from the beginning and the end of the std::string.
     If not specified, the default chars to be removed are space and tab chars.
-    @param srcStr      The string to be modified.
+    @param srcStr      The std::string to be modified.
     @param targetChar1 First char to be removed.
     @param targetChar2 Second char to be removed.
-    @return The string's new length which is never greater than the original length.
+    @return The std::string's new length which is never greater than the original length.
 */
 unsigned int PFL::strClr(char* const srcStr, char targetChar1, char targetChar2)
 {
@@ -456,7 +454,7 @@ int PFL::random(int from, int to)
 */
 float PFL::lerp(float v0, float v1, float t) {
     assert(v0 < v1);
-    t = max(0.f, min(t, 1.f));
+    t = std::max(0.f, std::min(t, 1.f));
     return (1 - t) * v0 + t * v1;
 }
 

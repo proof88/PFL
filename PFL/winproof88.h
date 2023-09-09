@@ -4,8 +4,16 @@
     ###################################################################################
     winproof88.h
     My way of including windows.h, for my projects.
+    The idea is the following:
+    unlike when including windows.h where macro definitions need to be used to SKIP
+    including a lot of usually unneeded definitions, using my header files requires
+    macro definitions to ALLOW including the usually unneeded definitions.
+    For example, by default I'm defining WIN32_LEAN_AND_MEAN and NOMINMAX macros before
+    including windows.h, and whoever needs extra functionality is needed to explicitly
+    enable them by defining my WINPROOF88_ALLOW_... macros before including my header.
     This file is part of PFL.
-    Made by PR00F88
+    Made by PR00F88, West Whiskhyll Entertainment
+    2023
     EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
 */
@@ -117,8 +125,10 @@
 #define NOKERNEL          /* - All KERNEL defines and routines */
 #endif
 
+#ifndef WINPROOF88_ALLOW_NATIONAL_LANGUAGE_SUPPORT
 #ifndef NONLS
 #define NONLS             /* - All NLS defines and routines */
+#endif
 #endif
 
 #ifndef WINPROOF88_ALLOW_MESSAGEBOX
@@ -135,6 +145,8 @@
 #define NOMETAFILE        /* - typedef METAFILEPICT */
 #endif
 
+// note that still somehow IntelliSense parses the min and max macros from minwindef.h, so expect that
+// in my projects I explicitly add NOMINMAX to the preprocessor definitions in project settings!
 #ifndef NOMINMAX
 #define NOMINMAX          /* - Macros min(a,b) and max(a,b) */
 #endif
