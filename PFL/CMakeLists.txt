@@ -24,7 +24,9 @@ set(ALL_FILES
 ################################################################################
 add_library(${PROJECT_NAME} STATIC ${ALL_FILES})
 
-use_props(${PROJECT_NAME} "${CMAKE_CONFIGURATION_TYPES}" "${DEFAULT_CXX_PROPS}")
+#use_props(${PROJECT_NAME} "${CMAKE_CONFIGURATION_TYPES}" "${DEFAULT_CXX_PROPS}")
+# use maybe this instead of above?
+#set_target_properties(${PROJECT_NAME} PROPERTIES VS_PROPERTY_SHEETS "${DEFAULT_CXX_PROPS}")
 set(ROOT_NAMESPACE PFL)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
