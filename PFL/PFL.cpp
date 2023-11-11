@@ -385,7 +385,7 @@ float PFL::roundf(float value)
 */
 int PFL::roundi(float value)
 {
-  return (int) roundf(value);
+    return (int)roundf(value);
 } // roundi()
 
 
@@ -394,9 +394,9 @@ int PFL::roundi(float value)
 */
 float PFL::constrain(float value, float min, float max)
 {
-    if ( value < min )
+    if (value < min)
         return min;
-    else if ( value > max )
+    else if (value > max)
         return max;
 
     return value;
@@ -456,6 +456,31 @@ float PFL::lerp(float v0, float v1, float t) {
     assert(v0 < v1);
     t = std::max(0.f, std::min(t, 1.f));
     return (1 - t) * v0 + t * v1;
+}
+
+
+/**
+   Smoothly approach fTarget from fCurrent.
+   The idea is to repeatedly invoke this function in multiple iterations with the same fTarget and fSpeed, but with
+   continuously changing fCurrent, where fCurrent is the return value of this function in the previous iteration.
+
+   @param fCurrent Initial value.
+   @param fTarget  Target value we want to reach by repeated calls to this function.
+   @param fSpeed   Speed of approaching fTarget, where bigger number means slower approach thus more iterations to reach target.
+                   Minimum value is 1.f where fTarget is reached from fCurrent in exactly 1 iteration.
+   @param fEpsilon Distance between fCurrent and fTarget where both are considered equal.
+
+   @return An f value where fCurrent < f <= fTarget.
+*/
+float PFL::smooth(float fCurrent, float fTarget, float fSpeed, float fEpsilon)
+{
+    assert(fSpeed >= 1.f);
+    fCurrent += ((fTarget - fCurrent) / fSpeed);
+    if (std::abs(fTarget - fCurrent) <= fEpsilon)
+    {
+        return fTarget;
+    }
+    return fCurrent;
 }
 
 

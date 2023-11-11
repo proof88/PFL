@@ -194,6 +194,9 @@ public:
     static float lerp(
         float v0, float v1, float t);           /**< Linear interpolation between v0 and v1. */
 
+    static float smooth(
+        float fCurrent, float fTarget, float fSpeed, float fEpsilon = 0.001f);  /**< Smoothly approach fTarget from fCurrent. */
+
     // ---------------------------------------------------------------------------
 
     PFL(); 
