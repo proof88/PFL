@@ -468,13 +468,16 @@ float PFL::lerp(float v0, float v1, float t) {
    @param fTarget  Target value we want to reach by repeated calls to this function.
    @param fSpeed   Speed of approaching fTarget, where bigger number means slower approach thus more iterations to reach target.
                    Minimum value is 1.f where fTarget is reached from fCurrent in exactly 1 iteration.
+                   Any fSpeed value less than 1.f will be treated as 1.f.
    @param fEpsilon Distance between fCurrent and fTarget where both are considered equal.
 
    @return An f value where fCurrent < f <= fTarget.
 */
 float PFL::smooth(float fCurrent, float fTarget, float fSpeed, float fEpsilon)
 {
-    assert(fSpeed >= 1.f);
+    if (fSpeed < 1.f) {
+        fSpeed = 1.f;
+    }
     fCurrent += ((fTarget - fCurrent) / fSpeed);
     if (std::abs(fTarget - fCurrent) <= fEpsilon)
     {
