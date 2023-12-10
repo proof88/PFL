@@ -10,7 +10,9 @@
     ###################################################################################
 */
 
+#include <array>
 #include <string>
+#include <type_traits>
 
 /**
     Bit manipulation macros.
@@ -149,6 +151,16 @@ public:
     static float E;
 
     // ---------------------------------------------------------------------------
+
+    /**
+     * Trick to define an std::array without explicitly specifying its size.
+     * Very useful before Cpp17, however sometimes even with Cpp17 it is needed.
+     */
+    template <typename V, typename... T>
+    static constexpr auto std_array_of(T&&... t) -> std::array<V, sizeof...(T)>
+    {
+        return { {std::forward<T>(t)...} };
+    }
 
     static int  gettimeofday(struct timeval * tp, struct timezone * tzp);                                  /**< Gets current time. */
     static long getTimeDiffInUs(const timeval& end, const timeval& begin);                                 /**< Gets difference of 2 timestamps. */
