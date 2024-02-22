@@ -166,6 +166,7 @@ bool PFL::updateForMaxDuration(timeval& timeRef, const timeval& timeBegin, const
 
 /**
     Determines whether the given file exists.
+
     @return True if a file with the given filename exists, false otherwise.
 */
 bool PFL::fileExists(const char* filename)
@@ -177,6 +178,7 @@ bool PFL::fileExists(const char* filename)
 
 /**
     Extracts the extension from the path.
+
     @return The extension in the given filename.
 */
 std::string PFL::getExtension(const char* path)
@@ -189,7 +191,9 @@ std::string PFL::getExtension(const char* path)
 
 /**
     Extracts the directory path from the full path.
+
     @param path The full path from where the directory path should be extracted.
+
     @return The extracted directory path. If not empty, there is always a delimiter character at the end of it.
             The delimiter character can be slash or backslash, depending on the given path.
 */
@@ -268,6 +272,7 @@ std::string PFL::changeExtension(const char* path, const char* ext)
 
 /**
     Gets how many times the given character appears in the given buffer.
+
     @return Number of appearance of the given character in the given buffer.
 */
 unsigned int PFL::numCharAppears(const char searchFor, const char* buffer, size_t buffer_size)
@@ -292,9 +297,11 @@ unsigned int PFL::numCharAppears(const char searchFor, const char* buffer, size_
     Removes trailing chars from the given std::string.
     Any trailing char can be removed from the end of the std::string.
     If not specified, the default trailing chars to be removed are space and tab chars.
+
     @param srcStr      The std::string to be modified.
     @param targetChar1 First char to be removed.
     @param targetChar2 Second char to be removed.
+
     @return The std::string's new length which is never greater than the original length.
 */
 unsigned int PFL::strClrTrails(char* srcStr, char targetChar1, char targetChar2)
@@ -315,9 +322,11 @@ unsigned int PFL::strClrTrails(char* srcStr, char targetChar1, char targetChar2)
     Removes leading chars from the given std::string.
     Any leading char can be removed from the beginning of the std::string.
     If not specified, the default leading chars to be removed are space and tab chars.
+
     @param srcStr      The std::string to be modified.
     @param targetChar1 First char to be removed.
     @param targetChar2 Second char to be removed.
+
     @return The std::string's new length which is never greater than the original length.
 */
 unsigned int PFL::strClrLeads(char* const srcStr, char targetChar1, char targetChar2)
@@ -348,9 +357,11 @@ unsigned int PFL::strClrLeads(char* const srcStr, char targetChar1, char targetC
     Removes leading and trailing chars from the given std::string.
     Any leading and trailing char can be removed from the beginning and the end of the std::string.
     If not specified, the default chars to be removed are space and tab chars.
+
     @param srcStr      The std::string to be modified.
     @param targetChar1 First char to be removed.
     @param targetChar2 Second char to be removed.
+
     @return The std::string's new length which is never greater than the original length.
 */
 unsigned int PFL::strClr(char* const srcStr, char targetChar1, char targetChar2)
@@ -371,6 +382,7 @@ float PFL::pi()
 
 /**
     Rounds the given value to the nearest whole number.
+
     @return The rounded value as a float.
 */
 float PFL::roundf(float value)
@@ -381,6 +393,7 @@ float PFL::roundf(float value)
 
 /**
     Rounds the given value to the nearest whole number.
+
     @return The rounded value as a signed integer.
 */
 int PFL::roundi(float value)
@@ -405,6 +418,7 @@ float PFL::constrain(float value, float min, float max)
 
 /**
     Converts the given angle from degrees to radians.
+
     @return The given angle in radians.
 */
 float PFL::degToRad(float degree)
@@ -415,6 +429,7 @@ float PFL::degToRad(float degree)
 
 /**
     Converts the given angle from radians to degrees.
+
     @return The given angle in degrees.
 */
 float PFL::radToDeg(float radian)
