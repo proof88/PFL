@@ -6,7 +6,6 @@
     PR00F Foundation Library
     This file is part of PFL.
     Made by PR00F88
-    EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
 */
 
