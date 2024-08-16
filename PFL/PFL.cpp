@@ -442,14 +442,30 @@ float PFL::radToDeg(float radian)
 */
 int PFL::random(int from, int to)
 {
+    assert(from <= to);
+
 #if __cplusplus > 199711L
     // https://stackoverflow.com/questions/13445688/how-to-generate-a-random-number-in-c
     // don't forget that you have to explicitly specify /Zc:__cplusplus flag to compiler so that __cplusplus will be set properly!
     // https://devblogs.microsoft.com/cppblog/msvc-now-correctly-reports-__cplusplus/
     static std::random_device dev;
     static std::mt19937 rng(dev());
+
+    // WA: because std::mt19937 initializes the mersenne twister engine with unsigned int type, we need to
+    // avoid integer overflow when 'from' is negative.
+    bool bWa = false;
+    const auto nAbsFrom = std::abs(from);
+    if (from < 0)
+    {
+        bWa = true;
+        to += nAbsFrom;
+        from = 0;
+    }
+
     std::uniform_int_distribution<std::mt19937::result_type> dist(from, to);
-    return dist(rng);
+    const auto nRandom = dist(rng);
+
+    return bWa ? (nRandom - nAbsFrom) : nRandom;
 #else
     return rand() % (to - from + 1) + from;
 #endif
