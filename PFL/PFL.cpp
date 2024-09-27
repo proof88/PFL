@@ -1,3 +1,4 @@
+#include "PFL.h"
 /*
     ###################################################################################
     PFL.cpp
@@ -368,6 +369,29 @@ unsigned int PFL::strClr(char* const srcStr, char targetChar1, char targetChar2)
     strClrLeads(srcStr, targetChar1, targetChar2);
     return strClrTrails(srcStr, targetChar1, targetChar2);
 } // strClr()
+
+
+/**
+    Calculates a hash for the given string.
+    Useful if you want to assign a unique id based on string content.
+
+    The calculated hash will be the same for the same input across multiple executions of the program.
+    Note that the hash produced by std::hash is not guaranteed to be the same across multiple executions of the program, hence
+    it is advised to use this PFL functionality instead if you want the same hash.
+
+    @return Hash of given string.
+*/
+PFL::StringHash PFL::calcHash(const std::string& str)
+{
+    PFL::StringHash hash = 5381;
+
+    for (const auto& c : str)
+    {
+        hash = (hash << 5) + hash + static_cast<uint32_t>(c);
+    }
+
+    return hash;
+}
 
 
 /**

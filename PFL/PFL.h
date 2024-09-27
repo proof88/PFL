@@ -10,6 +10,7 @@
 */
 
 #include <array>
+#include <cstdint>
 #include <string>
 #include <type_traits>
 
@@ -146,6 +147,8 @@ public:
         long tv_usec;
     } timeval;
 
+    typedef uint32_t StringHash;
+
     static float PI;
     static float E;
 
@@ -188,6 +191,8 @@ public:
     static unsigned int strClr(
         char* const srcStr,
         char targetChar1 = ' ', char targetChar2 = '\t'); /**< Removes leading and trailing spaces and tabs from the given string. */
+
+    static StringHash calcHash(const std::string& str);   /**< Calculates a hash for the given string. */
 
     static float pi();                          /**< Returns PI. */
 
