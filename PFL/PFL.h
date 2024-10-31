@@ -157,6 +157,12 @@ public:
     /**
      * Trick to define an std::array without explicitly specifying its size.
      * Very useful before Cpp17, however sometimes even with Cpp17 it is needed.
+     * Example:
+     *   static constexpr auto textArray = PFL::std_array_of<const char*>(
+     *     "text 1",
+     *     "text 2",
+     *     "text 3",
+     *   );
      */
     template <typename V, typename... T>
     static constexpr auto std_array_of(T&&... t) -> std::array<V, sizeof...(T)>
