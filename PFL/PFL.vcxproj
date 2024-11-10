@@ -314,6 +314,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="FixFIFO.h" />
     <ClInclude Include="PFL.h" />
     <ClInclude Include="winproof88.h" />
   </ItemGroup>

@@ -21,6 +21,9 @@
     <ClInclude Include="winproof88.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FixFIFO.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PFL.cpp">
