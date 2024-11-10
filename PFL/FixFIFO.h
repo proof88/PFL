@@ -95,7 +95,7 @@ namespace pfl
         *
         * @return True if push actually happened, false if push did not happen due to the queue being full.
         */
-        bool push_back(const T& elem)
+        bool push_back(T elem /* by value so copy elision will be done by compiler */)
         {
             if (full())
             {
@@ -119,17 +119,65 @@ namespace pfl
         * Complexity: O(1) constant.
         *
         * @param  elem The new elem to be added to the queue.
+        *              Data will be copied from the given elem, so it stays unchanged.
         */
-        void push_back_forced(const T& elem)
+        //void push_back_forced(const T& elem)
+        //{
+        //    if (full())
+        //    {
+        //        pop_front();
+        //    }
+        //
+        //    // since we do "mod m_nCapacity" of course this will be always true but let's leave this here in case someone modifies something!
+        //    assert(m_iEnd <= m_nCapacity);
+        //
+        //    m_array[m_iEnd] = elem;
+        //    m_iEnd = next_index(m_iEnd);
+        //    m_nSize++;
+        //}
+
+        /**
+        * Forcefully adds the elem to the back of the queue.
+        * This means that the given elem will be pushed into the queue even if it is already full.
+        * In such case, an implicit pop() will be done first to make space for the new elem.
+        * Complexity: O(1) constant.
+        *
+        * @param  elem The new elem to be added to the queue.
+        *              Data will be moved from the given elem, to minimize performance loss on copying.
+        */
+        //void push_back_forced(T&& elem)
+        //{
+        //    if (full())
+        //    {
+        //        pop_front();
+        //    }
+        //
+        //    // since we do "mod m_nCapacity" of course this will be always true but let's leave this here in case someone modifies something!
+        //    assert(m_iEnd <= m_nCapacity);
+        //
+        //    m_array[m_iEnd] = std::move(elem);
+        //    m_iEnd = next_index(m_iEnd);
+        //    m_nSize++;
+        //}
+
+        /**
+        * Forcefully adds the elem to the back of the queue.
+        * This means that the given elem will be pushed into the queue even if it is already full.
+        * In such case, an implicit pop() will be done first to make space for the new elem.
+        * Complexity: O(1) constant.
+        *
+        * @param  elem The new elem to be added to the queue.
+        */
+        void push_back_forced(T elem /* by value so copy elision will be done by compiler */)
         {
             if (full())
             {
                 pop_front();
             }
-
+        
             // since we do "mod m_nCapacity" of course this will be always true but let's leave this here in case someone modifies something!
             assert(m_iEnd <= m_nCapacity);
-
+        
             m_array[m_iEnd] = elem;
             m_iEnd = next_index(m_iEnd);
             m_nSize++;
