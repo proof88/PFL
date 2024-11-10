@@ -26,6 +26,11 @@ namespace pfl
 
     public:
 
+        /**
+        * @param capacity Maximum number of elements to be stored in this queue.
+        *                 Must be positive.
+        *                 Exception is thrown for zero value.
+        */
         FixFIFO(const size_t& capacity) :
             m_nCapacity(capacity)
         {
@@ -112,30 +117,8 @@ namespace pfl
             return true;
         }
 
-        /**
-        * Forcefully adds the elem to the back of the queue.
-        * This means that the given elem will be pushed into the queue even if it is already full.
-        * In such case, an implicit pop() will be done first to make space for the new elem.
-        * Complexity: O(1) constant.
-        *
-        * @param  elem The new elem to be added to the queue.
-        *              Data will be copied from the given elem, so it stays unchanged.
-        */
-        //void push_back_forced(const T& elem)
-        //{
-        //    if (full())
-        //    {
-        //        pop_front();
-        //    }
-        //
-        //    // since we do "mod m_nCapacity" of course this will be always true but let's leave this here in case someone modifies something!
-        //    assert(m_iEnd <= m_nCapacity);
-        //
-        //    m_array[m_iEnd] = elem;
-        //    m_iEnd = next_index(m_iEnd);
-        //    m_nSize++;
-        //}
-
+        // Not winning but losing with this moving version when T contains string.
+        // String's move assignment operator deallocates first before taking given string's resources. Bit slower this way then the copy-by-value way.
         /**
         * Forcefully adds the elem to the back of the queue.
         * This means that the given elem will be pushed into the queue even if it is already full.
@@ -172,7 +155,7 @@ namespace pfl
         {
             if (full())
             {
-                pop_front();
+                pop_front_noreturn();
             }
         
             // since we do "mod m_nCapacity" of course this will be always true but let's leave this here in case someone modifies something!
@@ -188,7 +171,7 @@ namespace pfl
         * Complexity: O(1) constant.
         *
         * @return The oldest elem of the queue that has just got removed.
-        *         TODO if the queue is empty.
+        *         Throws exception if the queue is empty.
         */
         T pop_front()
         {
@@ -208,7 +191,27 @@ namespace pfl
         }
 
         /**
+        * Same as pop_front() but does not return anything.
+        * A bit faster than pop_front().
+        * In some cases using this can make push_back_forced() be significantly faster.
+        */
+        void pop_front_noreturn()
+        {
+            if (empty())
+            {
+                throw std::runtime_error("Container is empty!");
+            }
+
+            // since we do "mod m_nCapacity" of course this will be always true but let's leave this here in case someone modifies something!
+            assert(m_iBegin <= m_nCapacity);
+
+            m_iBegin = next_index(m_iBegin);
+            m_nSize--;
+        }
+
+        /**
         * @return The oldest elem of the queue.
+        *         Throws exception if the queue is empty.
         */
         const T& front() const
         {
