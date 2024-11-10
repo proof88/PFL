@@ -198,10 +198,22 @@ namespace pfl
 
         /**
         * Can be used for iterating over underlying_array().
+        * See prev_index() for more info.
+        *
+        * @return The index of the last elem in the queue, where the index is element index of underlying_array().
+        */
+        const size_t rbegin_index() const
+        {
+            // since m_iEnd is always the elem index where push_back() writes, the last elem must be before that
+            return prev_index(m_iEnd);
+        }
+
+        /**
+        * Can be used for iterating over underlying_array().
         * 
         * Example:
-        * size_t i = fifo.begin_index();
-        * for (size_t n = 0; n < fifo.size(); n++
+        * size_t i = fifo.begin_index();  // might not be 0
+        * for (size_t n = 0; n < fifo.size(); n++)
         * {
         *   const auto& elem = fifo.underlying_array()[i];
         *   elem. ...(); // do something with elem
@@ -209,6 +221,7 @@ namespace pfl
         * }
         * 
         * @param curr_index The index of the current elem in the queue.
+        *                   Valid only if returned by begin_index(), or a prev_index() or an earlier next_index() call.
         *
         * @return The index of the next elem in the queue relative to the given curr_index, where the index is element index of underlying_array().
         *         Note that next_index() can be smaller than curr_index, depending on previous FIFO operations, since underlying array is treated as circular buffer.
@@ -220,10 +233,34 @@ namespace pfl
         }
 
         /**
+        * Can be used for reverse-iterating over underlying_array().
+        *
+        * Example:
+        * size_t i = fifo.rbegin_index();
+        * for (size_t n = 0; n < fifo.size(); n++
+        * {
+        *   const auto& elem = fifo.underlying_array()[i];
+        *   elem. ...(); // do something with elem
+        *   i = fifo.prev_index(i);
+        * }
+        *
+        * @param curr_index The index of the current elem in the queue.
+        *                   Valid only if returned by rbegin_index(), or a next_index() or an earlier prev_index() call.
+        *
+        * @return The index of the previous elem in the queue relative to the given curr_index, where the index is element index of underlying_array().
+        *         Note that prev_index() can be greater than curr_index, depending on previous FIFO operations, since underlying array is treated as circular buffer.
+        */
+        size_t prev_index(const size_t& curr_index) const
+        {
+            assert(m_nCapacity);  // ctor ensures
+            return (curr_index == 0) ? (m_nCapacity - 1) : (curr_index - 1) % m_nCapacity;
+        }
+
+        /**
         * For debug purpose only, the underlying array of elements can be observed.
         * 
         * @return The underlying fixed-size array where elements are stored.
-        *         Note that order of elements in the queue might be different than order of elements in this array.
+        *         Note that order of elements in the queue might be different than order of elements in this array, since this array is treated as circular buffer.
         */
         const T* underlying_array() const
         {
