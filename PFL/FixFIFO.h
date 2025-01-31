@@ -318,6 +318,12 @@ namespace pfl
             return m_array.data();
         }
 
+        // TODO: this non-const version shall be removed! For now, it is required by PRooFPS-dd v0.5, see proofps_dd::GUI::updateDeathKillEvents() !
+        T* underlying_array()
+        {
+            return m_array.data();
+        }
+
     private:
         const size_t m_nCapacity = 0;   /**< Max number of elements in the queue, i.e. size of the underlying array. */
 
