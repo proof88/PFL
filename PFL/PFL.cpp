@@ -491,6 +491,12 @@ int PFL::random(int from, int to)
 
     return bWa ? (nRandom - nAbsFrom) : nRandom;
 #else
+    static bool bSeedSet = false;
+    if (!bSeedSet)
+    {
+        bSeedSet = true;
+        srand((unsigned)time(0));
+    }
     return rand() % (to - from + 1) + from;
 #endif
 }
@@ -538,30 +544,6 @@ float PFL::smooth(float fCurrent, float fTarget, float fSpeed, float fEpsilon)
         return fTarget;
     }
     return fCurrent;
-}
-
-
-PFL::PFL()
-{
-    srand((unsigned)time(0));
-}
-
-
-PFL::PFL(const PFL&)
-{
-
-}
-
-
-PFL& PFL::operator= (const PFL&)
-{
-    return *this;
-}
-
-
-PFL::~PFL()
-{
-
 }
 
 

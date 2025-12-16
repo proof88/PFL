@@ -128,10 +128,12 @@ public:
 
     // ---------------------------------------------------------------------------
 
-    PFL(); 
-    PFL(const PFL&);
-    PFL& operator= (const PFL&);
-    virtual ~PFL();
+    PFL() = delete;
+
+    PFL(const PFL&) = delete;
+    PFL operator=(const PFL&) = delete;
+    PFL(PFL&&) = delete;
+    PFL&& operator=(PFL&&) = delete;
 
 }; // class PFL
 
