@@ -9,14 +9,51 @@
     ###################################################################################
 */
 
+#ifndef PFL_CPLUSPLUS_11
+#define PFL_CPLUSPLUS_11 201103L
+#endif
+
+#ifndef PFL_CPLUSPLUS_14
+#define PFL_CPLUSPLUS_14 201402L
+#endif
+
+#ifndef PFL_CPLUSPLUS_17
+#define PFL_CPLUSPLUS_17 201703L
+#endif
+
+#ifndef PFL_CPLUSPLUS_20
+#define PFL_CPLUSPLUS_20 202002L
+#endif
+
+#ifndef PFL_COMPILER_SUPPORTS_CPLUSPLUS_11
+#define PFL_COMPILER_SUPPORTS_CPLUSPLUS_11 (__cplusplus >= PFL_CPLUSPLUS_11)
+#endif
+
+#ifndef PFL_COMPILER_SUPPORTS_CPLUSPLUS_14
+#define PFL_COMPILER_SUPPORTS_CPLUSPLUS_14 (__cplusplus >= PFL_CPLUSPLUS_14)
+#endif
+
+#ifndef PFL_COMPILER_SUPPORTS_CPLUSPLUS_17
+#define PFL_COMPILER_SUPPORTS_CPLUSPLUS_17 (__cplusplus >= PFL_CPLUSPLUS_17)
+#endif
+
+#ifndef PFL_COMPILER_SUPPORTS_CPLUSPLUS_20
+#define PFL_COMPILER_SUPPORTS_CPLUSPLUS_20 (__cplusplus >= PFL_CPLUSPLUS_20)
+#endif
+
+#if PFL_COMPILER_SUPPORTS_CPLUSPLUS_11
 #include <array>
+#endif
+
 #include <cstdint>
 #include <memory>
+#include <sstream>
 #include <string>
 #include <type_traits>
 
 namespace std
 {
+#if PFL_COMPILER_SUPPORTS_CPLUSPLUS_11
     /**
     * There is no std::static_pointer_cast for weak_ptr so here is one.
     */
@@ -34,20 +71,19 @@ namespace std
     {
         return std::dynamic_pointer_cast<T>(std::shared_ptr<U>(r));
     }
+#endif
 }
 
 
 /**
     PR00F Foundation Library class.
-    Useful functions.
-
-    Not following the Pimpl idiom here as there are no hidden members in this class for the outside world.
+    Useful functions for any C++ project.
 */
 class PFL
 {
 
 public:
-    // when I switch to C++11 I won't need this struct here and the custom gettimeofday() implementation
+    // when I switch to C++11 I won't need this struct here and the custom gettimeofday() implementation;
     // MSVC defines this in winsock2.h!?
     typedef struct timeval {
         long tv_sec;
@@ -59,8 +95,16 @@ public:
     static float PI;
     static float E;
 
+    struct PrintFloatShort
+    {
+        float m_value;
+        unsigned int m_maxDecimalDigits;
+        float m_epsilon;
+    };
+
     // ---------------------------------------------------------------------------
 
+#if PFL_COMPILER_SUPPORTS_CPLUSPLUS_11
     /**
      * Trick to define an std::array without explicitly specifying its size.
      * Very useful before Cpp17, however sometimes even with Cpp17 it is needed.
@@ -76,6 +120,7 @@ public:
     {
         return { {std::forward<T>(t)...} };
     }
+#endif
 
     static int  gettimeofday(struct timeval * tp, struct timezone * tzp);                                  /**< Gets current time. */
     static long getTimeDiffInUs(const timeval& end, const timeval& begin);                                 /**< Gets difference of 2 timestamps. */
@@ -112,6 +157,26 @@ public:
     static float roundf(float value);           /**< Rounds the given value to the nearest whole number. */
     static int   roundi(float value);           /**< Rounds the given value to the nearest whole number. */
 
+    static void printFloatToStringShort(
+        float value,
+        std::string& outString,
+        unsigned int maxDecimalDigits,
+        float epsilon = 0.000001f);                      /**< Prints the given floating-point value into the given string in the
+                                                              shortest possible decimal (non-scientific) format. */
+
+    static std::ostream& printFloatToStreamShort(
+        float value,
+        std::ostream& outStream,
+        unsigned int maxDecimalDigits,
+        float epsilon = 0.000001f);                      /**< Prints the given floating-point value into the given stream in the
+                                                              shortest possible decimal (non-scientific) format. */
+
+    static PrintFloatShort makePrintFloatShort(
+        float value,
+        unsigned int maxDecimalDigits,
+        float epsilon = 0.000001f);                      /**< Makes a PrintFloatShort type object that can be sent to a stream
+                                                              using ostream's operator<<() override. */
+
     static float constrain(
         float value, float min, float max);     /**< Constrains the given value into the given [min,max] bounds. */
 
@@ -132,8 +197,14 @@ public:
 
     PFL(const PFL&) = delete;
     PFL operator=(const PFL&) = delete;
+
+#if PFL_COMPILER_SUPPORTS_CPLUSPLUS_11
     PFL(PFL&&) = delete;
     PFL&& operator=(PFL&&) = delete;
+#endif
 
 }; // class PFL
 
+std::ostream& operator<<(
+    std::ostream& os,
+    const PFL::PrintFloatShort& f);  /**< Convenient way of sending a float to a stream in printFloatToSStreamShort() form. */

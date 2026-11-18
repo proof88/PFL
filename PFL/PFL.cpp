@@ -12,21 +12,23 @@
 #include "PFL.h"
 
 // PFL.h already includes std::string so no use removing the following headers at all to win compilation speed
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
 
+#include "winproof88.h" // needed only for the gettimeofday() implementation
+#include <stdint.h> // needed only for the gettimeofday() implementation; portable: uint64_t, MSVC: __int64 
+
 #include <cassert>
 #include <cstdlib> 
 #include <ctime> 
-#include <math.h>
-#include <random>  // cpp11
+#include <iomanip>
+#include <iostream>
 
-// these includes below are needed only for the gettimeofday() implementation 
-#include "winproof88.h"
-#include <stdint.h> // portable: uint64_t   MSVC: __int64 
-
-#define M_PI
+#if PFL_COMPILER_SUPPORTS_CPLUSPLUS_11
+#include <random>
+#endif
 
 
 // ############################### PUBLIC ################################
@@ -424,6 +426,199 @@ int PFL::roundi(float value)
     return (int)roundf(value);
 } // roundi()
 
+/**
+    Prints the given floating-point value into the given string in the shortest possible
+    decimal (non-scientific) format, with special rounding rule determined by the required
+    count of decimal digits: the kept decimal part is rounded up or down based on the
+    removed decimal part, WITHOUT changing the integer part.
+    The integer part is changed only if maxDecimalDigits is 0, since in this case
+    we totally remove the decimal part and explicitly request an integer number that
+    must be rounded in this case using the full omitted decimal part.
+    
+    Thus, this function gives a different printing compared to a simple printf() or
+    stream::operator<<().
+
+    Trailing zeroes or decimal dot are also removed automatically.
+
+    If the given value is close to zero but still interpreted as non-zero, but
+    maxDecimalDigits is insufficient, then either "~0" or "~-0" will be printed to clearly
+    show the value is non-zero. This behavior is only for values close to zero but not to
+    other integer values.
+
+    Examples:
+     - printFloatToStringShort(0.00001, outString, 0)
+       => outString will be: "~0" instead of "0" so it is clear
+          that value is not exactly 0 but we have too few decimal
+          digits allowed.
+
+     - printFloatToStringShort(0.00001, outString, 1)
+       => outString will be: "~0" instead of "0" so it is clear
+          that value is not exactly 0 but we have too few decimal
+          digits allowed.
+
+     - printFloatToStringShort(0.00001, outString, 4)
+       => outString will be: "~0" instead of "0" so it is clear
+          that value is not exactly 0 but we have too few decimal
+          digits allowed.
+
+     - printFloatToStringShort(0.00001, outString, 5)
+       => outString will be: "0.00001".
+
+     - printFloatToStringShort(0.00001, outString, 10)
+       => outString will be: "0.00001".
+
+     - printFloatToStringShort(0.00001f, outString, 5, epsilon = 0.0001f)
+       => outString will be: "0" because of epsilon is bigger than value
+          so we have to treat this non-zero value as zero.
+
+     - printFloatToStringShort(4.15, outString, 1)
+       => outString will be: "4.2".
+
+     - printFloatToStringShort(4.15, outString, 2)
+       => outString will be: "4.15".
+
+     - printFloatToStringShort(4.15, outString, 0)
+       => outString will be: "4".
+
+     - printFloatToStringShort(-4.15, outString, 1)
+       => outString will be: "-4.2".
+
+     - printFloatToStringShort(-4.15, outString, 2)
+       => outString will be: "-4.15".
+
+     - printFloatToStringShort(-4.15, outString, 0)
+       => outString will be: "-4".
+
+     - printFloatToStringShort(440.99997, outString, 5)
+       => outString will be: "440.99997".
+
+     - printFloatToStringShort(440.99997, outString, 1)
+       => outString will be: "440.9".
+          Here integer part is NOT changed due to the first
+          decimal digit is still present, even though
+          it looks truncated now.
+
+     - printFloatToStringShort(440.99997, outString, 0)
+       => outString will be: "441".
+          Here integer part is changed due to losing
+          full decimal part requires integer part to be rounded up.
+
+    @param value            Number to be printed in shortest but non-scientific form.
+    @param outString        String where we print the number.
+                            The string will be overwritten.
+    @param maxDecimalDigits Maximum count of decimal digits to be printed.
+                            If negative, "err" will be printed to the given string.
+    @param epsilon          Optionally specified your own epsilon value.
+                            If value is closer to 0 than the epsilon, it will be printed as "0".
+*/
+void PFL::printFloatToStringShort(float value, std::string& outString, unsigned int maxDecimalDigits, float epsilon)
+{
+    if (abs(value) < epsilon)
+    {
+        outString = "0";
+        return;
+    }
+
+    if (maxDecimalDigits == 0)
+    {
+        const auto roundedValue = std::lroundf(value);
+        if (roundedValue == 0)
+        {
+            // we already passed the comparison with epsilon above, so if
+            // we are here it means that "value" shall not be treated as 0,
+            // so we shall print "~0" instead of "0", so it can be still
+            // differentiated from a pure zero.
+            outString = (value < 0.f) ? "~-0" : "~0";
+            return;
+        }
+        outString = std::to_string(roundedValue);
+        return;
+    }
+
+    if (maxDecimalDigits > static_cast<unsigned int>(INT_MAX))
+    {
+        // because sprintf() would parse it as integer
+        outString = "err";
+        return;
+    }
+
+    const double multiplier = std::pow(10.0, maxDecimalDigits);
+
+    // round to the requested decimal precision
+    // e.g. if value is 0.00001 and maxDecimalDigits is 5,
+    // then roundedValue = round(0.00001 * 10^5) / 10^5 = 1 / 10^5 = 0.00001
+    double magnifiedValue = std::round(value * multiplier);
+    double roundedValue = magnifiedValue / multiplier;
+
+    if (magnifiedValue == 0.f)
+    {
+        // this means that "value" is so small that it cannot be expressed
+        // with the given "maxDecimalDigits" count of digits, however if
+        // "value" is not exactly zero, we shall print "~0" instead of "0",
+        // so it can be still differentiated from a pure zero.
+        outString = (value < 0.f) ? "~-0" : "~0";
+        return;
+    }
+
+    // prevent rounding from changing the integer part
+    if (std::floor(std::abs(roundedValue)) > std::floor(std::abs(static_cast<double>(value))))
+    {
+        roundedValue = std::trunc(value * multiplier) / multiplier;
+    }
+
+    static char buff[80];
+    sprintf_s(buff, sizeof(buff), "%.*f", static_cast<int>(maxDecimalDigits), roundedValue);
+
+    // remove unnecessary trailing decimal zeroes
+    size_t newLen = strlen(buff);
+
+    while ((newLen > 0) && (buff[newLen - 1] == '0'))
+    {
+        buff[newLen - 1] = '\0';
+        newLen--;
+    }
+
+    // remove trailing decimal point
+    if ((newLen > 0) && (buff[newLen - 1] == '.'))
+    {
+        buff[newLen - 1] = '\0';
+        newLen--;
+    }
+
+    outString = buff;
+} // printFloatToStringShort()
+
+/**
+    Prints the given floating-point value into the given stream in the shortest possible
+    decimal (non-scientific) format, with special rounding rule as explained for
+    printFloatToStringShort().
+
+    Content of the given stream will NOT be replaced, the printed value will be added to the stream.
+
+    @param value            Number to be printed in shortest but non-scientific form.
+    @param outStream        Stream where we print the number.
+    @param maxDecimalDigits Maximum count of decimal digits to be printed.
+                            If negative, "err" will be printed to the given string.
+    @param epsilon          Optionally specified your own epsilon value.
+                            If value is closer to 0 than the epsilon, it will be printed as "0".
+*/
+std::ostream& PFL::printFloatToStreamShort(float value, std::ostream& outStream, unsigned int maxDecimalDigits, float epsilon)
+{
+    std::string tmpString;
+    PFL::printFloatToStringShort(value, tmpString, maxDecimalDigits, epsilon);
+    outStream << tmpString;
+    return outStream;
+} // printFloatToSStreamShort()
+
+/**
+    Makes a PrintFloatShort type object that can be sent to a stream using ostream's operator<<() override. 
+
+    Arguments as explained for printFloatToStringShort().
+*/
+PFL::PrintFloatShort PFL::makePrintFloatShort(float value, unsigned int maxDecimalDigits, float epsilon)
+{
+    return { value, maxDecimalDigits, epsilon };
+}
 
 /**
     Constrains the given value into the given [min,max] bounds.
@@ -468,7 +663,7 @@ int PFL::random(int from, int to)
 {
     assert(from <= to);
 
-#if __cplusplus > 199711L
+#if PFL_COMPILER_SUPPORTS_CPLUSPLUS_11
     // https://stackoverflow.com/questions/13445688/how-to-generate-a-random-number-in-c
     // don't forget that you have to explicitly specify /Zc:__cplusplus flag to compiler so that __cplusplus will be set properly!
     // https://devblogs.microsoft.com/cppblog/msvc-now-correctly-reports-__cplusplus/
@@ -546,14 +741,26 @@ float PFL::smooth(float fCurrent, float fTarget, float fSpeed, float fEpsilon)
     return fCurrent;
 }
 
+/**
+    Convenient way of sending a float to a stream in printFloatToStreamShort() form.
+
+    Prints the given floating-point value into the given stream in the shortest possible
+    decimal (non-scientific) format, with special rounding rule as explained for
+    printFloatToStringShort().
+
+    Content of the given outSStream will NOT be replaced, the printed value will be added to the stream.
+
+    @param f        A struct created using PFL::makePrintFloatShort().
+    @param os       Stream where we print the number.
+*/
+std::ostream& operator<<(std::ostream& os, const PFL::PrintFloatShort& f)
+{
+    PFL::printFloatToStreamShort(f.m_value, os, f.m_maxDecimalDigits, f.m_epsilon);
+    return os;
+}
+
 
 // ############################## PROTECTED ##############################
 
 
 // ############################### PRIVATE ###############################
-
-
-
-
-
-

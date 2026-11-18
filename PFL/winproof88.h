@@ -11,6 +11,7 @@
     For example, by default I'm defining WIN32_LEAN_AND_MEAN and NOMINMAX macros before
     including windows.h, and whoever needs extra functionality is needed to explicitly
     enable them by defining my WINPROOF88_ALLOW_... macros before including my header.
+
     This file is part of PFL.
     Made by PR00F88, West Whiskhyll Entertainment
     2023
